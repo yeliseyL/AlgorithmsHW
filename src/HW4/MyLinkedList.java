@@ -1,6 +1,8 @@
 package HW4;
 
 import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 public class MyLinkedList<T> implements Iterable<T>{
     private Node first;
@@ -10,6 +12,10 @@ public class MyLinkedList<T> implements Iterable<T>{
     @Override
     public Iterator<T> iterator() {
         return new Iter();
+    }
+
+    public ListIterator<T> listIterator() {
+        return new ListIter();
     }
 
     public MyLinkedList() {
@@ -49,6 +55,108 @@ public class MyLinkedList<T> implements Iterable<T>{
         public T next() {
             current = current.next;
             return current.value;
+        }
+    }
+
+    private class ListIter implements ListIterator<T>{
+        Node current = new Node(null, first);
+        T lastElementReturned = null;
+
+        @Override
+        public boolean hasNext() {
+            return current.next != null;
+        }
+
+        @Override
+        public T next() {
+            if (hasNext()) {
+                current = current.next;
+                lastElementReturned = current.value;
+                return lastElementReturned;
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return current.previous != null;
+        }
+
+        @Override
+        public T previous() {
+            if (hasPrevious()) {
+                current = current.previous;
+                lastElementReturned = current.value;
+                return lastElementReturned;
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        @Override
+        public int nextIndex() {
+            Node current = first;
+            int index = 0;
+            while (current != null) {
+                if (current.value.equals(next())) {
+                    return  index;
+                }
+                current = current.next;
+                index++;
+            }
+            return size;
+        }
+
+        @Override
+        public int previousIndex() {
+            Node current = last;
+            int index = size - 1;
+            while (current != null) {
+                if (current.value.equals(next())) {
+                    return  index;
+                }
+                current = current.previous;
+                index--;
+            }
+            return -1;
+        }
+
+        @Override
+        public void remove() {
+            if (lastElementReturned == null) {
+                throw new IllegalStateException();
+            }
+            Node current = first;
+            while (current!= null && !current.value.equals(lastElementReturned)) {
+                current = current.next;
+            }
+            current.previous.next = current.next;
+            current.next.previous = current.previous;
+            size--;
+        }
+
+        @Override
+        public void set(T t) {
+            if (lastElementReturned == null) {
+                throw new IllegalStateException();
+            }
+            Node current = first;
+            while (current!= null && !current.value.equals(lastElementReturned)) {
+                current = current.next;
+            }
+            current.value = t;
+        }
+
+        @Override
+        public void add(T t) {
+            if (hasNext() || hasPrevious()) {
+                Node newNode = new Node(t, current.next);
+                newNode.previous = current;
+                current.next = newNode;
+                newNode.next.previous = newNode;
+                size++;
+            }
         }
     }
 
