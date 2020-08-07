@@ -11,11 +11,13 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
         Node left;
         Node right;
         int size;
+        int height;
 
         public Node(Key key, Value value) {
             this.key = key;
             this.value = value;
             this.size = 1;
+            this.height = 0;
         }
     }
 
@@ -28,6 +30,17 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
             return 0;
         }
         return node.size;
+    }
+
+    public int height() {
+        return height(root);
+    }
+
+    private int height(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return node.height;
     }
 
     public boolean isEmpty() {
@@ -89,9 +102,27 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
             node.right = put(node.right, key, value);
         }
         node.size = size(node.left) + size(node.right) + 1;
+        if (height(node.left) >= height(node.right)) {
+            node.height = height(node.left) + 1;
+        } else {
+            node.height = height(node.right) + 1;
+        }
         return node;
     }
 
+    public boolean isBalanced() {
+        return isBalanced(root);
+    }
+
+    private boolean isBalanced(Node node) {
+        if (node.height == 0) {
+            return true;
+        }
+        if (Math.abs(height(node.left) - height(node.right)) > 1) {
+            return false;
+        }
+        return true;
+    }
 
     public Key minKey() {
         return min(root).key;
@@ -132,13 +163,13 @@ public class MyTreeMap<Key extends Comparable<Key>, Value> {
         int cmp = key.compareTo(node.key);
         if (cmp < 0) {
             node.left = delete(node.left, key);
-        } else if(cmp> 0){
+        } else if (cmp > 0) {
             node.right = delete(node.right, key);
         } else {
-            if(node.left == null){
+            if (node.left == null) {
                 return node.right;
             }
-            if(node.right == null){
+            if (node.right == null) {
                 return node.left;
             }
 

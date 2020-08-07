@@ -1,21 +1,40 @@
 package HW6;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
-        MyTreeMap<Integer, String> map = new MyTreeMap<>();
+        final int MAX_HEIGHT = 6;
+        final int MAPS_NUMBER = 20;
+        List<MyTreeMap<Integer, Integer>> list = new ArrayList<>();
 
-        map.put(5,"five");
-        map.put(1,"one");
-        map.put(3,"three");
-        map.put(2,"two");
+        for (int i = 0; i < MAPS_NUMBER; i++) {
+            MyTreeMap<Integer, Integer> map = new MyTreeMap<>();
+            Random random = new Random();
+            do {
+                int key = random.nextInt(MAPS_NUMBER);
+                int value = random.ints(-100,(100+1)).findFirst().getAsInt();
+                map.put(key, value);
+            } while (map.height() < MAX_HEIGHT);
+            list.add(map);
+        }
 
-        System.out.println(map);
-        System.out.println(map.get(2));
-        map.put(2,"ttt");
-        System.out.println(map);
+        for (MyTreeMap<Integer, Integer> map : list) {
+            System.out.println(map);
+            System.out.printf("Map is balanced: %b%n%n",  map.isBalanced());
+        }
+        System.out.println("Unbalanced maps: " + unbalancedPercent(list) + "%");
+    }
 
-        map.deleteMin();
-        System.out.println(map);
-
+    public static double unbalancedPercent(List<MyTreeMap<Integer, Integer>> list) {
+        double unbalanced = 0;
+        for (MyTreeMap<Integer, Integer> map : list) {
+            if (!map.isBalanced()) {
+                unbalanced++;
+            }
+        }
+        return (unbalanced / list.size()) * 100;
     }
 }
