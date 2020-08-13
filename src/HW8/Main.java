@@ -23,6 +23,9 @@ public class Main {
 
         System.out.println(chm);
 
+        chm.delete(3);
+
+        System.out.println(chm);
 
 //        Random random = new Random();
 //
